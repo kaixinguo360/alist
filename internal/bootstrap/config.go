@@ -72,6 +72,17 @@ func InitConfig() {
 	if err != nil {
 		log.Fatalf("create temp dir error: %+v", err)
 	}
+	if !filepath.IsAbs(conf.Conf.OfflineDownloadTempDir) {
+		absPath, err := filepath.Abs(conf.Conf.OfflineDownloadTempDir)
+		if err != nil {
+			log.Fatalf("get abs path error: %+v", err)
+		}
+		conf.Conf.OfflineDownloadTempDir = absPath
+	}
+	err = os.MkdirAll(conf.Conf.OfflineDownloadTempDir, 0o777)
+	if err != nil {
+		log.Fatalf("create offline download temp dir error: %+v", err)
+	}
 	log.Debugf("config: %+v", conf.Conf)
 	base.InitClient()
 	initURL()
@@ -109,6 +120,15 @@ func CleanTempDir() {
 	for _, file := range files {
 		if err := os.RemoveAll(filepath.Join(conf.Conf.TempDir, file.Name())); err != nil {
 			log.Errorln("failed delete temp file: ", err)
+		}
+	}
+	files, err = os.ReadDir(conf.Conf.OfflineDownloadTempDir)
+	if err != nil {
+		log.Errorln("failed list offline download temp file: ", err)
+	}
+	for _, file := range files {
+		if err := os.RemoveAll(filepath.Join(conf.Conf.TempDir, file.Name())); err != nil {
+			log.Errorln("failed delete offline download temp file: ", err)
 		}
 	}
 }

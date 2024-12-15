@@ -65,7 +65,7 @@ func AddURL(ctx context.Context, args *AddURLArgs) (task.TaskInfoWithCreator, er
 	}
 
 	uid := uuid.NewString()
-	tempDir := filepath.Join(conf.Conf.TempDir, args.Tool, uid)
+	tempDir := filepath.Join(conf.Conf.OfflineDownloadTempDir, args.Tool, uid)
 	deletePolicy := args.DeletePolicy
 
 	switch args.Tool {
